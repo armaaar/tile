@@ -90,7 +90,7 @@ function ProgressBar {
         _empty=$(printf "%${_left}s")
 
     # Build progressbar strings and print the ProgressBar line
-    printf "\rProgress : [${_fill// /\#}${_empty// /-}] ${_progress}%%"
+    printf "\rProgress : [${_fill// /\#}${_empty// /-}] ${_progress}%% | ${1} of ${2}"
 }
 
 TILES_COUNT=`expr $VERTICAL_COUNT \* $HORIZONTAL_COUNT`
