@@ -1,11 +1,12 @@
 #!/bin/sh
-
+# make sure an image was given
 if [ ! $1 ]
 then
     echo "Must specify The image to tile"
     exit 1
 fi
 
+# Get image width and height
 IMG=$1
 IMG_WIDTH=`gm identify -format %w ${IMG}`
 IMG_HEIGHT=`gm identify -format %H ${IMG}`
@@ -16,6 +17,7 @@ then
     exit 1
 fi
 
+# calculate tiles parameters ( count, width, height)
 case "$2" in
     -c|--count)
         if [ ! $3 ]
@@ -67,3 +69,45 @@ case "$2" in
         fi
         ;;
 esac
+
+# 1. ProgressBar function
+# 1.1 Input is currentState($1) and totalState($2)
+function ProgressBar {
+    # Process data
+        let _progress=(${1}*100/${2}*100)/100
+        let _done=(${_progress}*4)/10
+        let _left=40-$_done
+    # Build progressbar string lengths
+        _fill=$(printf "%${_done}s")
+        _empty=$(printf "%${_left}s")
+
+    # Build progressbar strings and print the ProgressBar line
+    printf "\rProgress : [${_fill// /\#}${_empty// /-}] ${_progress}%%"
+}
+
+TILES_COUNT=`expr $VERTICAL_COUNT \* $HORIZONTAL_COUNT`
+TILES_DONE=0
+
+# Create a folder for tiles if not exist
+TILES_DIR="$(dirname ${IMG})/$(basename ${IMG})-${TILE_WIDTH}x${TILE_HEIGHT}_tiles"
+mkdir -p $TILES_DIR
+
+# Create tiles
+INDEX_ROWS=0
+while [ $INDEX_ROWS -lt $VERTICAL_COUNT ]
+do
+    INDEX_COLS=0
+    while [ $INDEX_COLS -lt $HORIZONTAL_COUNT ]
+    do
+        TOP_OFFSET=`expr $INDEX_ROWS \* $TILE_HEIGHT`
+        LEFT_OFFSET=`expr $INDEX_COLS \* $TILE_WIDTH`
+        `gm convert -crop ${TILE_WIDTH}x${TILE_HEIGHT}+${LEFT_OFFSET}+${TOP_OFFSET} ${IMG} ${TILES_DIR}/tile-${INDEX_ROWS}-${INDEX_COLS}.jpg`
+
+        TILES_DONE=`expr $TILES_DONE + 1`
+        ProgressBar $TILES_DONE $TILES_COUNT
+
+        INDEX_COLS=`expr $INDEX_COLS + 1`
+    done
+    INDEX_ROWS=`expr $INDEX_ROWS + 1`
+done
+exit 0
