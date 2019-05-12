@@ -1,5 +1,11 @@
 #!/bin/sh
 
+if [ ! $1 ]
+then
+    echo "Must specify The image to tile"
+    exit 1
+fi
+
 IMG=$1
 IMG_WIDTH=`gm identify -format %w ${IMG}`
 IMG_HEIGHT=`gm identify -format %H ${IMG}`
@@ -61,5 +67,3 @@ case "$2" in
         fi
         ;;
 esac
-
-# gm convert -crop 100x100+400+0 ${IMG} ./tiles/tile-0-0.jpg
