@@ -1,4 +1,6 @@
 #!/bin/sh
+# Author : Ahmed Rafik Radwan
+
 # make sure an image was given
 if [ ! $1 ]
 then
