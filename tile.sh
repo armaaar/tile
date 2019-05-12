@@ -11,6 +11,12 @@ IMG=$1
 IMG_WIDTH=`gm identify -format %w ${IMG}`
 IMG_HEIGHT=`gm identify -format %H ${IMG}`
 
+if [ ! $IMG_WIDTH -o ! $IMG_HEIGHT ]
+then
+    echo "File must be an Image"
+    exit 1
+fi
+
 if [ ! $2 ]
 then
     echo "Must specify at least the tile width"
